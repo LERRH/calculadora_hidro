@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Balance de Energía - UNALM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background-color: #0C6854;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background-color: #0C6854;
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background-color: #084a3a;
+        }
+
+        .module-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-bottom: 20px;
+        }
+
+        .module-card h2 {
+            color: #0C6854;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .description {
+            background: #f0f9f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .formula-box {
+            background: #e8f5f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula-box h3 {
+            color: #0C6854;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #0C6854;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #084a3a;
+            box-shadow: 0 0 5px rgba(12, 104, 84, 0.3);
+        }
+
+        .form-group small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .btn-calculate {
+            background-color: #0C6854;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-calculate:hover {
+            background-color: #084a3a;
+        }
+
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results h3 {
+            color: #0C6854;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .result-item {
+            background: #f0f9f7;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .result-item strong {
+            color: #0C6854;
+        }
+
+        .result-final {
+            background: #0C6854;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        .result-final .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .header p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Universidad Nacional Agraria La Molina</h1>
+        <p>Maestría en Recursos Hídricos</p>
+        <p>Curso: Métodos de análisis en ingeniería de recursos hídricos</p>
+        <p>Autor: Luis Robles</p>
+    </div>
+
+    <!-- Contenido -->
+    <div class="container">
+        <a href="../index.html" class="back-btn">← Volver al Menú</a>
+
+        <div class="module-card">
+            <h2>⚖️ Método de Balance de Energía</h2>
+            
+            <div class="description">
+                <p>
+                    El método de balance de energía calcula la tasa de evaporación desde una superficie 
+                    abierta de agua utilizando la radiación neta disponible. Este método asume que no 
+                    existen campos de flujo de calor sensible o de calor de suelo significativos.
+                </p>
+            </div>
+
+            <div class="formula-box">
+                <h3>📐 Fórmula Base</h3>
+                <p><strong>E<sub>r</sub> = R<sub>n</sub> / (λ<sub>v</sub> × ρ<sub>w</sub>)</strong></p>
+                <br>
+                <p>Donde:</p>
+                <p>• E<sub>r</sub> = Tasa de evaporación (m/s)</p>
+                <p>• R<sub>n</sub> = Radiación neta (W/m²)</p>
+                <p>• λ<sub>v</sub> = Calor latente de vaporización (kJ/kg)</p>
+                <p>• ρ<sub>w</sub> = Densidad del agua (kg/m³)</p>
+                <br>
+                <p><strong>λ<sub>v</sub> = 2,500 - 2.36 × T</strong> (kJ/kg)</p>
+                <p>T = Temperatura del aire (°C)</p>
+            </div>
+
+            <div class="example-box">
+                <h4>💡 Ejemplo (Ven Te Chow)</h4>
+                <p><strong>Datos:</strong> R<sub>n</sub> = 200 W/m², T = 25°C</p>
+                <p><strong>Resultado esperado:</strong> 7.10 mm/día</p>
+            </div>
+
+            <!-- Formulario -->
+            <form id="calculatorForm">
+                <div class="form-group">
+                    <label for="radiacion">Radiación neta (R<sub>n</sub>):</label>
+                    <input type="number" id="radiacion" step="0.01" value="200" required>
+                    <small>Unidades: W/m²</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="temperatura">Temperatura del aire (T):</label>
+                    <input type="number" id="temperatura" step="0.1" value="25" required>
+                    <small>Unidades: °C (rango: 0-100°C)</small>
+                    <small style="margin-top: 3px;">
+                        Densidad del agua a esta temperatura: <strong><span id="densidadDisplay">997</span> kg/m³</strong>
+                    </small>
+                </div>
+
+                <button type="submit" class="btn-calculate">🔬 Calcular Evaporación</button>
+            </form>
+        </div>
+
+        <!-- Resultados -->
+        <div class="results" id="results">
+            <h3>📊 Resultados del Cálculo</h3>
+            
+            <div class="result-item">
+                <strong>Calor latente de vaporización (λ<sub>v</sub>):</strong>
+                <span id="calorLatente">-</span> kJ/kg
+            </div>
+
+            <div class="result-item">
+                <strong>Densidad del agua (ρ<sub>w</sub>):</strong>
+                <span id="densidadAgua">-</span> kg/m³
+                <small style="display: block; margin-top: 5px; color: #666;">
+                    (Tabla 2.5.2 - Interpolación según temperatura)
+                </small>
+            </div>
+
+            <div class="result-item">
+                <strong>Tasa de evaporación (E<sub>r</sub>):</strong>
+                <span id="tasaEvaporacion">-</span> m/s
+            </div>
+
+            <div class="result-final">
+                <div>Evaporación Diaria</div>
+                <div class="value" id="evaporacionDiaria">-</div>
+                <div>mm/día</div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #e8f5f1; border-radius: 5px;">
+                <strong>📝 Procedimiento de cálculo:</strong>
+                <ol style="margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+                    <li>Calcular λ<sub>v</sub> = 2,500 - 2.36 × T</li>
+                    <li>Aplicar E<sub>r</sub> = R<sub>n</sub> / (λ<sub>v</sub> × 10³ × ρ<sub>w</sub>)</li>
+                    <li>Convertir de m/s a mm/día: × 1,000 × 86,400</li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tabla de densidad del agua según temperatura (Tabla 2.5.2)
+        const densidadAgua = {
+            0: 1000, 5: 1000, 10: 1000, 15: 999, 20: 998, 25: 997,
+            30: 996, 35: 994, 40: 992, 50: 988, 60: 983, 70: 978,
+            80: 972, 90: 965, 100: 958
+        };
+
+        // Función para obtener densidad por interpolación lineal
+        function obtenerDensidad(T) {
+            // Si la temperatura está en la tabla, retornar directamente
+            if (densidadAgua[T] !== undefined) {
+                return densidadAgua[T];
+            }
+
+            // Encontrar los valores más cercanos para interpolar
+            const temperaturas = Object.keys(densidadAgua).map(Number).sort((a, b) => a - b);
+            
+            // Buscar T1 (menor que T) y T2 (mayor que T)
+            let T1 = temperaturas[0];
+            let T2 = temperaturas[temperaturas.length - 1];
+            
+            for (let i = 0; i < temperaturas.length - 1; i++) {
+                if (temperaturas[i] <= T && temperaturas[i + 1] >= T) {
+                    T1 = temperaturas[i];
+                    T2 = temperaturas[i + 1];
+                    break;
+                }
+            }
+
+            // Interpolación lineal
+            const rho1 = densidadAgua[T1];
+            const rho2 = densidadAgua[T2];
+            const densidad = rho1 + (rho2 - rho1) * (T - T1) / (T2 - T1);
+            
+            return Math.round(densidad);
+        }
+
+        const form = document.getElementById('calculatorForm');
+        const resultsDiv = document.getElementById('results');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calcularEvaporacion();
+        });
+
+        function calcularEvaporacion() {
+            // Obtener valores de entrada
+            const Rn = parseFloat(document.getElementById('radiacion').value);
+            const T = parseFloat(document.getElementById('temperatura').value);
+
+            // Validar entradas
+            if (isNaN(Rn) || isNaN(T)) {
+                alert('Por favor ingrese valores numéricos válidos');
+                return;
+            }
+
+            if (T < 0 || T > 100) {
+                alert('La temperatura debe estar entre 0°C y 100°C');
+                return;
+            }
+
+            // Obtener densidad del agua según temperatura
+            const densidad = obtenerDensidad(T);
+
+            // 1. Calcular calor latente de vaporización (kJ/kg)
+            const calorLatente = 2500 - 2.36 * T;
+
+            // 2. Calcular tasa de evaporación (m/s)
+            // Er = Rn / (λv × 10³ × ρw)
+            // Multiplicamos λv por 1000 para convertir kJ/kg a J/kg
+            const tasaEvaporacion = Rn / (calorLatente * 1000 * densidad);
+
+            // 3. Convertir a mm/día
+            // 1 m/s = 1,000 mm/m × 86,400 s/día = 86,400,000 mm/día
+            const evaporacionDiaria = tasaEvaporacion * 1000 * 86400;
+
+            // Mostrar resultados
+            document.getElementById('calorLatente').textContent = calorLatente.toFixed(3);
+            document.getElementById('densidadAgua').textContent = densidad;
+            document.getElementById('tasaEvaporacion').textContent = tasaEvaporacion.toExponential(2);
+            document.getElementById('evaporacionDiaria').textContent = evaporacionDiaria.toFixed(2);
+
+            // Mostrar sección de resultados
+            resultsDiv.classList.add('show');
+
+            // Scroll suave a resultados
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Log para debugging
+            console.log('=== BALANCE DE ENERGÍA ===');
+            console.log('Radiación neta (Rn):', Rn, 'W/m²');
+            console.log('Temperatura (T):', T, '°C');
+            console.log('Densidad agua (ρw):', densidad, 'kg/m³');
+            console.log('Calor latente (λv):', calorLatente.toFixed(3), 'kJ/kg');
+            console.log('Tasa evaporación (Er):', tasaEvaporacion.toExponential(6), 'm/s');
+            console.log('Evaporación diaria:', evaporacionDiaria.toFixed(2), 'mm/día');
+            console.log('========================');
+        }
+
+        // Actualizar densidad cuando cambia la temperatura
+        document.getElementById('temperatura').addEventListener('input', function() {
+            const T = parseFloat(this.value);
+            if (!isNaN(T) && T >= 0 && T <= 100) {
+                const densidad = obtenerDensidad(T);
+                // Mostrar densidad en tiempo real si existe el elemento
+                const densidadDisplay = document.getElementById('densidadDisplay');
+                if (densidadDisplay) {
+                    densidadDisplay.textContent = densidad;
+                }
+            }
+        });
+    </script>
+</body>
+</html>
