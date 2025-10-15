@@ -3,7 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora Hidrológica - UNALM</title>
+    <meta name="description" content="Portal de Calculadoras - Métodos de Análisis en Recursos Hídricos - UNALM">
+    <meta name="keywords" content="hidrología, recursos hídricos, UNALM, calculadoras">
+    <meta name="author" content="Universidad Nacional Agraria La Molina">
+    <title>Calculadoras Hidrológicas | UNALM</title>
+    
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
     <style>
         * {
             margin: 0;
@@ -12,62 +21,129 @@
         }
 
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Inter', Arial, sans-serif;
             background-color: #f5f5f5;
-        }
-
-        .header {
-            background-color: #0C6854;
-            color: white;
-            padding: 30px 20px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 24px;
-            margin-bottom: 10px;
-        }
-
-        .header p {
-            font-size: 14px;
-            margin: 5px 0;
+            min-height: 100vh;
+            color: #333;
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
 
-        .intro {
+        /* Header */
+        .header {
             background: white;
-            padding: 20px;
             border-radius: 8px;
-            margin-bottom: 30px;
-            border-left: 4px solid #0C6854;
+            padding: 50px 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            border-top: 4px solid #0C6854;
         }
 
-        .intro h2 {
+        .unalm-logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .unalm-logo img {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .logo-fallback {
+            background: #0C6854;
+            color: white;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 900;
+            letter-spacing: 2px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
             color: #0C6854;
-            margin-bottom: 10px;
-            font-size: 20px;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .course-info {
+            background: #f8f9fa;
+            border-left: 4px solid #0C6854;
+            padding: 20px 30px;
+            margin: 30px auto;
+            max-width: 700px;
+        }
+
+        .course-title {
+            font-size: 1.3rem;
+            color: #0C6854;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .professor {
+            font-size: 1rem;
+            color: #555;
+            margin-top: 8px;
+        }
+
+        .professor strong {
+            color: #0C6854;
+            font-weight: 600;
+        }
+
+        .institution {
+            font-size: 1rem;
+            color: #666;
+            margin-top: 20px;
+            font-weight: 500;
+        }
+
+        /* Modules Section */
+        .modules-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            color: #0C6854;
+            font-size: 1.6rem;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: center;
         }
 
         .modules-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
             gap: 20px;
-            margin-top: 20px;
+            margin-bottom: 40px;
         }
 
         .module-card {
             background: white;
-            padding: 25px;
             border-radius: 8px;
-            border: 2px solid #0C6854;
-            text-align: center;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            padding: 30px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
             cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+            border: 2px solid #0C6854;
         }
 
         .module-card:hover {
@@ -75,139 +151,117 @@
             box-shadow: 0 10px 25px rgba(12, 104, 84, 0.2);
         }
 
-        .module-card h3 {
+        .module-title {
+            font-size: 1.3rem;
+            font-weight: 600;
             color: #0C6854;
-            margin-bottom: 10px;
-            font-size: 18px;
-        }
-
-        .module-card p {
-            color: #333;
-            font-size: 14px;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-
-        .module-card .btn {
-            display: inline-block;
-            background-color: #0C6854;
-            color: white;
-            padding: 10px 25px;
-            text-decoration: none;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: background-color 0.3s ease;
-        }
-
-        .module-card .btn:hover {
-            background-color: #084a3a;
-        }
-
-        .module-card.disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .module-card.disabled:hover {
-            transform: none;
-            box-shadow: none;
-        }
-
-        .module-card.disabled .btn {
-            background-color: #999;
-            cursor: not-allowed;
-        }
-
-        .footer {
             text-align: center;
-            padding: 20px;
-            color: #666;
-            font-size: 12px;
-            margin-top: 40px;
         }
 
-        @media (max-width: 600px) {
-            .header h1 {
-                font-size: 20px;
+        /* Footer */
+        .footer {
+            background: white;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #0C6854;
+        }
+
+        .footer-content p {
+            margin: 8px 0;
+            color: #555;
+        }
+
+        .footer-links {
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+
+        .footer-links a {
+            color: #0C6854;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .footer-links a:hover {
+            color: #084a3a;
+            text-decoration: underline;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.8rem;
             }
 
-            .header p {
-                font-size: 12px;
+            .course-title {
+                font-size: 1.1rem;
             }
 
             .modules-grid {
                 grid-template-columns: 1fr;
             }
+
+            .section-title {
+                font-size: 1.3rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Header Institucional -->
-    <div class="header">
-        <h1>Universidad Nacional Agraria La Molina</h1>
-        <p>Maestría en Recursos Hídricos</p>
-        <p>Curso: Métodos de análisis en ingeniería de recursos hídricos</p>
-        <p>Autor: Luis Robles</p>
-    </div>
-
-    <!-- Contenido Principal -->
     <div class="container">
-        <!-- Introducción -->
-        <div class="intro">
-            <h2>📊 Calculadora Hidrológica Modular</h2>
-            <p>
-                Seleccione un módulo de cálculo. Cada módulo es independiente y permite 
-                calcular diferentes componentes de evaporación y evapotranspiración.
-            </p>
-        </div>
-
-        <!-- Grid de Módulos -->
-        <div class="modules-grid">
-            <!-- Módulo 1: Balance de Energía -->
-            <div class="module-card">
-                <h3>⚖️ Balance de Energía</h3>
-                <p>
-                    Calcula la evaporación a partir de la radiación neta disponible 
-                    y el flujo de calor del suelo.
-                </p>
-                <a href="modulos/balance-energia.html" class="btn">Abrir Módulo</a>
+        <!-- Header -->
+        <header class="header">
+            <div class="unalm-logo">
+                <img src="assets/images/unalm-logo.svg" alt="UNALM Logo" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="logo-fallback">UNALM</div>
             </div>
-
-            <!-- Módulo 2: Método Aerodinámico -->
-            <div class="module-card">
-                <h3>💨 Método Aerodinámico</h3>
-                <p>
-                    Estima la evaporación mediante la transferencia turbulenta 
-                    de vapor de agua desde la superficie.
-                </p>
-                <a href="modulos/aerodinamico.html" class="btn">Abrir Módulo</a>
+            <h1>Portal de Calculadoras Hidrológicas</h1>
+            
+            <div class="course-info">
+                <div class="course-title">Métodos de Análisis en Recursos Hídricos</div>
+                <div class="professor">Docente: <strong>Dr. Eduardo Chavarri Velarde</strong></div>
             </div>
+            
+            <div class="institution">Universidad Nacional Agraria La Molina</div>
+        </header>
 
-            <!-- Módulo 3: Método Combinado -->
-            <div class="module-card">
-                <h3>🔄 Método Combinado</h3>
-                <p>
-                    Combina el balance de energía con el método aerodinámico 
-                    (ecuación de Penman).
-                </p>
-                <a href="modulos/combinado.html" class="btn">Abrir Módulo</a>
+        <!-- Modules Section -->
+        <section class="modules-section">
+            <h2 class="section-title">Módulos de Cálculo</h2>
+            
+            <div class="modules-grid">
+                <!-- Módulo Precipitación -->
+                <a href="precipitacion/index.html" class="module-card">
+                    <h3 class="module-title">Precipitación</h3>
+                </a>
+
+                <!-- Módulo Evaporación -->
+                <a href="evaporacion/index.html" class="module-card">
+                    <h3 class="module-title">Evaporación</h3>
+                </a>
+
+                <!-- Módulo Evapotranspiración -->
+                <a href="evapotranspiracion/index.html" class="module-card">
+                    <h3 class="module-title">Evapotranspiración</h3>
+                </a>
             </div>
+        </section>
 
-            <!-- Módulo 4: Radiación Neta (Próximamente) -->
-            <div class="module-card disabled">
-                <h3>📡 Radiación Neta</h3>
-                <p>
-                    Calcula la radiación neta disponible en una superficie 
-                    (próximamente).
-                </p>
-                <span class="btn">Próximamente</span>
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>Desarrollado para la <strong>Universidad Nacional Agraria La Molina (UNALM)</strong></p>
+                <p>Maestría en Recursos Hídricos - 2025</p>
+                <div class="footer-links">
+                    <a href="https://www.lamolina.edu.pe" target="_blank" rel="noopener">Web UNALM</a> | 
+                    <a href="mailto:admision@lamolina.edu.pe">Contacto</a> | 
+                    <a href="https://github.com/tu-usuario/calculadoras-hidrologicas-unalm" target="_blank" rel="noopener">GitHub</a>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Footer -->
-    <div class="footer">
-        <p>&copy; 2025 Universidad Nacional Agraria La Molina - Maestría en Recursos Hídricos</p>
+        </footer>
     </div>
 </body>
 </html>

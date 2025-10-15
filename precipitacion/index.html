@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agua Precipitable - UNALM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background-color: #0C6854;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background-color: #0C6854;
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background-color: #084a3a;
+        }
+
+        .module-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-bottom: 20px;
+        }
+
+        .module-card h2 {
+            color: #0C6854;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .description {
+            background: #f0f9f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .formula-box {
+            background: #e8f5f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula-box h3 {
+            color: #0C6854;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #0C6854;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #084a3a;
+            box-shadow: 0 0 5px rgba(12, 104, 84, 0.3);
+        }
+
+        .form-group small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .btn-calculate {
+            background-color: #0C6854;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-calculate:hover {
+            background-color: #084a3a;
+        }
+
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results h3 {
+            color: #0C6854;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .result-final {
+            background: #0C6854;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        .result-final .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+        }
+
+        .chart-container h3 {
+            color: #0C6854;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .header p {
+                font-size: 12px;
+            }
+
+            .profiles-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Universidad Nacional Agraria La Molina</h1>
+        <p>Maestría en Recursos Hídricos</p>
+        <p>Curso: Métodos de análisis en ingeniería de recursos hídricos</p>
+        <p>Docente: Dr. Eduardo Chavarri Velarde</p>
+    </div>
+
+    <!-- Contenido -->
+    <div class="container">
+        <a href="../index.html" class="back-btn">← Volver al Menú</a>
+
+        <div class="module-card">
+            <h2>💧 Cálculo del Agua Precipitable</h2>
+            
+            <div class="description">
+                <p>
+                    El agua precipitable es la cantidad total de vapor de agua contenido en una columna 
+                    de aire saturada. Se calcula estimando las presiones atmosféricas en función de las 
+                    leyes del vapor de agua y presión hidrostática a diferentes elevaciones.
+                </p>
+            </div>
+
+            <div class="formula-box">
+                <h3>📐 Fórmulas utilizadas</h3>
+                <p><strong>Temperatura (°K):</strong> t(i) = tem + 273</p>
+                <p><strong>Presión atmosférica (kPa):</strong> p(i) = 101.3 × exp(-α/Ra × t(i))</p>
+                <p><strong>Densidad del aire (kg/m³):</strong> den(i) = (p(i) × 1000) / (Ra × t(i))</p>
+                <p><strong>Presión de vapor (kPa):</strong> es(i) = Pr_vap_sat(t(i) - 273) / 10</p>
+                <p><strong>Humedad específica (kg/kg):</strong> qh(i) = 0.622 × es(i) / (p(i) - 0.378 × es(i))</p>
+                <br>
+                <p><strong>Donde:</strong></p>
+                <p>• Ra = 287 J/(kgK) - Constante específica del aire</p>
+                <p>• α = 6.5 (Gradiente térmico)</p>
+                <p>• Pr_vap_sat - Presión de vapor saturado (fórmula empírica)</p>
+            </div>
+
+            <!-- Formulario -->
+            <form id="calculatorForm">
+                <div class="form-group">
+                    <label for="temperatura">Temperatura en la superficie (°C):</label>
+                    <input type="number" id="temperatura" step="0.1" value="35" required>
+                    <small>Temperatura del aire al nivel del suelo</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="alturaTotal">Altura total de la columna (m):</label>
+                    <input type="number" id="alturaTotal" step="1" value="10000" required>
+                    <small>Altura máxima para el análisis de la columna de aire</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="numCapas">Número de capas:</label>
+                    <input type="number" id="numCapas" step="1" min="2" max="100" value="5" required>
+                    <small>Divisiones de la columna para el cálculo (2-100 capas)</small>
+                </div>
+
+                <button type="submit" class="btn-calculate">🔬 Calcular Agua Precipitable</button>
+            </form>
+        </div>
+
+        <!-- Resultados -->
+        <div class="results" id="results">
+            <h3>📊 Resultados del Cálculo</h3>
+            
+            <div class="result-final">
+                <div>Agua Precipitable Total</div>
+                <div class="value" id="aguaPrecipitable">-</div>
+                <div>mm</div>
+            </div>
+        </div>
+
+        <!-- Gráficos -->
+        <div class="chart-container" id="chartsContainer" style="display: none;">
+            <h3>📈 Perfiles Atmosféricos</h3>
+            <div class="profiles-grid">
+                <div>
+                    <canvas id="tempChart"></canvas>
+                </div>
+                <div>
+                    <canvas id="presionChart"></canvas>
+                </div>
+                <div>
+                    <canvas id="densidadChart"></canvas>
+                </div>
+                <div>
+                    <canvas id="vaporChart"></canvas>
+                </div>
+                <div>
+                    <canvas id="humedadChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        const form = document.getElementById('calculatorForm');
+        const resultsDiv = document.getElementById('results');
+        const chartsContainer = document.getElementById('chartsContainer');
+
+        // Constantes
+        const Ra = 287; // J/(kgK)
+        const alfa = 6.5; // Gradiente T
+
+        // Función para calcular presión de vapor saturado (kPa)
+        function Pr_vap_sat(T) {
+            // T en °C
+            return Math.exp(16.4 - 3885.7 / (T + 230.17));
+        }
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calcularAguaPrecipitable();
+        });
+
+        function calcularAguaPrecipitable() {
+            // Obtener valores de entrada
+            const tem = parseFloat(document.getElementById('temperatura').value);
+            const alt_total = parseFloat(document.getElementById('alturaTotal').value);
+            const num_capas = parseInt(document.getElementById('numCapas').value);
+
+            // Validaciones
+            if (isNaN(tem) || isNaN(alt_total) || isNaN(num_capas)) {
+                alert('Por favor ingrese valores numéricos válidos');
+                return;
+            }
+
+            if (num_capas < 2 || num_capas > 100) {
+                alert('El número de capas debe estar entre 2 y 100');
+                return;
+            }
+
+            const delta_alt = alt_total / num_capas;
+
+            // Arrays para almacenar resultados
+            const npuntos = 6;
+            const elev = new Array(npuntos);
+            const t = new Array(npuntos);
+            const p = new Array(npuntos);
+            const den = new Array(npuntos);
+            const es = new Array(npuntos);
+            const qh = new Array(npuntos);
+
+            // Inicialización
+            for (let i = 0; i < npuntos; i++) {
+                t[i] = tem + 273; // K
+                p[i] = 101.3; // kPa
+                den[i] = 0;
+                es[i] = 0;
+                qh[i] = 0;
+                elev[i] = 0;
+            }
+
+            let l_prec = 0;
+
+            // Cálculo iterativo
+            const expo = 9.81 * 1000 / (alfa * Ra);
+
+            for (let i = 1; i <= num_capas; i++) {
+                t[i] = t[i-1] - ((alfa) * delta_alt / 1000);
+                p[i] = p[i-1] * Math.pow((t[i] / t[i-1]), expo);
+                den[i] = (p[i] * 1000) / (Ra * t[i]);
+                es[i] = Pr_vap_sat(t[i] - 273) / 10;
+                qh[i] = 0.622 * es[i] / (p[i] - 0.378 * es[i]);
+                elev[i] = i * delta_alt;
+                
+                const qhm = 0.5 * qh[i] + 0.5 * qh[i-1];
+                const denm = 0.5 * den[i] + 0.5 * den[i-1];
+                l_prec = l_prec + qhm * denm * delta_alt;
+            }
+
+            // Mostrar resultado principal
+            document.getElementById('aguaPrecipitable').textContent = l_prec.toFixed(2);
+            resultsDiv.classList.add('show');
+
+            // Crear gráficos
+            crearGraficos(elev, t, p, den, es, qh);
+
+            // Mostrar contenedor de gráficos
+            chartsContainer.style.display = 'block';
+
+            // Scroll suave a resultados
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Log para debugging
+            console.log('=== AGUA PRECIPITABLE ===');
+            console.log('Temperatura superficie:', tem, '°C');
+            console.log('Altura total:', alt_total, 'm');
+            console.log('Número de capas:', num_capas);
+            console.log('Agua precipitable:', l_prec.toFixed(2), 'mm');
+            console.log('========================');
+        }
+
+        let charts = {};
+
+        function crearGraficos(elev, t, p, den, es, qh) {
+            // Destruir gráficos anteriores
+            Object.values(charts).forEach(chart => chart.destroy());
+            charts = {};
+
+            // Convertir temperatura a °C para visualización
+            const tCelsius = t.map(temp => temp - 273);
+
+            // Configuración común
+            const commonOptions = {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: { 
+                        title: { display: true }
+                    },
+                    y: { 
+                        title: { display: true, text: 'Elevación (m)' }
+                    }
+                }
+            };
+
+            // Gráfico de Temperatura
+            charts.temp = new Chart(document.getElementById('tempChart'), {
+                type: 'line',
+                data: {
+                    labels: elev,
+                    datasets: [{
+                        label: 'Temperatura',
+                        data: tCelsius,
+                        borderColor: '#0C6854',
+                        backgroundColor: 'rgba(12, 104, 84, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        x: { 
+                            ...commonOptions.scales.x,
+                            title: { display: true, text: 'Temperatura del aire (°C)' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Presión
+            charts.presion = new Chart(document.getElementById('presionChart'), {
+                type: 'line',
+                data: {
+                    labels: elev,
+                    datasets: [{
+                        label: 'Presión',
+                        data: p,
+                        borderColor: '#e74c3c',
+                        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        x: { 
+                            ...commonOptions.scales.x,
+                            title: { display: true, text: 'Presión atmosférica (kPa)' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Densidad
+            charts.densidad = new Chart(document.getElementById('densidadChart'), {
+                type: 'line',
+                data: {
+                    labels: elev,
+                    datasets: [{
+                        label: 'Densidad',
+                        data: den,
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        x: { 
+                            ...commonOptions.scales.x,
+                            title: { display: true, text: 'Densidad del aire (kg/m³)' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Presión de Vapor
+            charts.vapor = new Chart(document.getElementById('vaporChart'), {
+                type: 'line',
+                data: {
+                    labels: elev,
+                    datasets: [{
+                        label: 'Presión de vapor',
+                        data: es,
+                        borderColor: '#9b59b6',
+                        backgroundColor: 'rgba(155, 89, 182, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        x: { 
+                            ...commonOptions.scales.x,
+                            title: { display: true, text: 'Presión de vapor (kPa)' }
+                        }
+                    }
+                }
+            });
+
+            // Gráfico de Humedad Específica
+            charts.humedad = new Chart(document.getElementById('humedadChart'), {
+                type: 'line',
+                data: {
+                    labels: elev,
+                    datasets: [{
+                        label: 'Humedad específica',
+                        data: qh,
+                        borderColor: '#f39c12',
+                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    ...commonOptions,
+                    scales: {
+                        ...commonOptions.scales,
+                        x: { 
+                            ...commonOptions.scales.x,
+                            title: { display: true, text: 'Humedad específica (kg/kg)' }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

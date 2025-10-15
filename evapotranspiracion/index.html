@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evapotranspiración - Samani y Hargreaves - UNALM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background-color: #0C6854;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background-color: #0C6854;
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background-color: #084a3a;
+        }
+
+        .module-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-bottom: 20px;
+        }
+
+        .module-card h2 {
+            color: #0C6854;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .description {
+            background: #f0f9f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #0C6854;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #084a3a;
+            box-shadow: 0 0 5px rgba(12, 104, 84, 0.3);
+        }
+
+        .form-group small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .section-title {
+            color: #0C6854;
+            font-size: 18px;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #0C6854;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .data-table th {
+            background-color: #0C6854;
+            color: white;
+            padding: 12px;
+            text-align: center;
+            font-size: 14px;
+            border: 1px solid #0C6854;
+        }
+
+        .data-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #ddd;
+        }
+
+        .data-table input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #0C6854;
+            border-radius: 3px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .data-table input:focus {
+            outline: none;
+            border-color: #084a3a;
+            box-shadow: 0 0 3px rgba(12, 104, 84, 0.3);
+        }
+
+        .btn-calculate {
+            background-color: #0C6854;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-calculate:hover {
+            background-color: #084a3a;
+        }
+
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results h3 {
+            color: #0C6854;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .data-table {
+                font-size: 12px;
+            }
+
+            .data-table th,
+            .data-table td {
+                padding: 6px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Universidad Nacional Agraria La Molina</h1>
+        <p>Maestría en Recursos Hídricos</p>
+        <p>Curso: Métodos de análisis en ingeniería de recursos hídricos</p>
+        <p>Docente: Dr. Eduardo Chavarri Velarde</p>
+    </div>
+
+    <!-- Contenido -->
+    <div class="container">
+        <a href="../index.html" class="back-btn">← Volver al Menú</a>
+
+        <div class="module-card">
+            <h2>🌾 Evapotranspiración - Método de Samani y Hargreaves (1985)</h2>
+            
+            <div class="description">
+                <p>
+                    El método de Samani y Hargreaves (1985) es un método empírico para estimar la 
+                    evapotranspiración de referencia (ETo) utilizando datos de temperatura y radiación 
+                    solar extraterrestre. Es especialmente útil cuando no se dispone de todos los 
+                    parámetros requeridos por métodos más complejos como Penman-Monteith.
+                </p>
+            </div>
+
+            <!-- Formulario -->
+            <form id="calculatorForm">
+                <!-- Datos generales -->
+                <h3 class="section-title">📍 Datos Generales</h3>
+                
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="anio">Año:</label>
+                        <input type="number" id="anio" min="1900" max="2100" value="2025" required>
+                        <small>Año del análisis</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="elevacion">Elevación (m.s.n.m.):</label>
+                        <input type="number" id="elevacion" step="0.1" value="2620" required>
+                        <small>Altitud sobre el nivel del mar</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="latitud">Latitud (grados decimales):</label>
+                        <input type="number" id="latitud" step="0.01" min="-90" max="90" value="-7.1" required>
+                        <small>Latitud (negativo = Sur, positivo = Norte)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="longitud">Longitud (grados decimales):</label>
+                        <input type="number" id="longitud" step="0.01" min="-180" max="180" value="-78.5" required>
+                        <small>Longitud (negativo = Oeste, positivo = Este)</small>
+                    </div>
+                </div>
+
+                <!-- Datos mensuales -->
+                <h3 class="section-title">📊 Datos Climáticos Mensuales</h3>
+                
+                <div style="overflow-x: auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Mes</th>
+                                <th>Precipitación Media<br>(mm)</th>
+                                <th>Temperatura Máxima<br>T<sub>max</sub> (°C)</th>
+                                <th>Temperatura Mínima<br>T<sub>min</sub> (°C)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Enero</strong></td>
+                                <td><input type="number" id="precip_1" step="0.1" value="71" required></td>
+                                <td><input type="number" id="tmax_1" step="0.1" value="21.6" required></td>
+                                <td><input type="number" id="tmin_1" step="0.1" value="9" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Febrero</strong></td>
+                                <td><input type="number" id="precip_2" step="0.1" value="247" required></td>
+                                <td><input type="number" id="tmax_2" step="0.1" value="18.7" required></td>
+                                <td><input type="number" id="tmin_2" step="0.1" value="6.5" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Marzo</strong></td>
+                                <td><input type="number" id="precip_3" step="0.1" value="200" required></td>
+                                <td><input type="number" id="tmax_3" step="0.1" value="19.4" required></td>
+                                <td><input type="number" id="tmin_3" step="0.1" value="7.4" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Abril</strong></td>
+                                <td><input type="number" id="precip_4" step="0.1" value="99" required></td>
+                                <td><input type="number" id="tmax_4" step="0.1" value="20.5" required></td>
+                                <td><input type="number" id="tmin_4" step="0.1" value="7.1" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Mayo</strong></td>
+                                <td><input type="number" id="precip_5" step="0.1" value="55" required></td>
+                                <td><input type="number" id="tmax_5" step="0.1" value="20.7" required></td>
+                                <td><input type="number" id="tmin_5" step="0.1" value="5.4" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Junio</strong></td>
+                                <td><input type="number" id="precip_6" step="0.1" value="6" required></td>
+                                <td><input type="number" id="tmax_6" step="0.1" value="21.2" required></td>
+                                <td><input type="number" id="tmin_6" step="0.1" value="4.4" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Julio</strong></td>
+                                <td><input type="number" id="precip_7" step="0.1" value="5" required></td>
+                                <td><input type="number" id="tmax_7" step="0.1" value="21.7" required></td>
+                                <td><input type="number" id="tmin_7" step="0.1" value="2.6" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Agosto</strong></td>
+                                <td><input type="number" id="precip_8" step="0.1" value="17" required></td>
+                                <td><input type="number" id="tmax_8" step="0.1" value="21.2" required></td>
+                                <td><input type="number" id="tmin_8" step="0.1" value="3" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Septiembre</strong></td>
+                                <td><input type="number" id="precip_9" step="0.1" value="67" required></td>
+                                <td><input type="number" id="tmax_9" step="0.1" value="21.7" required></td>
+                                <td><input type="number" id="tmin_9" step="0.1" value="5.1" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Octubre</strong></td>
+                                <td><input type="number" id="precip_10" step="0.1" value="1" required></td>
+                                <td><input type="number" id="tmax_10" step="0.1" value="22.6" required></td>
+                                <td><input type="number" id="tmin_10" step="0.1" value="4.2" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Noviembre</strong></td>
+                                <td><input type="number" id="precip_11" step="0.1" value="23" required></td>
+                                <td><input type="number" id="tmax_11" step="0.1" value="22.2" required></td>
+                                <td><input type="number" id="tmin_11" step="0.1" value="3" required></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Diciembre</strong></td>
+                                <td><input type="number" id="precip_12" step="0.1" value="114" required></td>
+                                <td><input type="number" id="tmax_12" step="0.1" value="21.4" required></td>
+                                <td><input type="number" id="tmin_12" step="0.1" value="7.1" required></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <button type="submit" class="btn-calculate">🔬 Calcular Evapotranspiración</button>
+            </form>
+        </div>
+
+        <!-- Resultados -->
+        <div class="results" id="results">
+            <h3>📊 Resultados del Cálculo - Método de Samani y Hargreaves (1985)</h3>
+            
+            <div style="overflow-x: auto; margin-top: 20px;">
+                <table class="data-table" id="resultsTable">
+                    <thead>
+                        <tr>
+                            <th style="min-width: 200px;">Parámetro</th>
+                            <th>Ene</th>
+                            <th>Feb</th>
+                            <th>Mar</th>
+                            <th>Abr</th>
+                            <th>May</th>
+                            <th>Jun</th>
+                            <th>Jul</th>
+                            <th>Ago</th>
+                            <th>Sep</th>
+                            <th>Oct</th>
+                            <th>Nov</th>
+                            <th>Dic</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Días/periodo (DM)</strong></td>
+                            <td id="dm_1">-</td>
+                            <td id="dm_2">-</td>
+                            <td id="dm_3">-</td>
+                            <td id="dm_4">-</td>
+                            <td id="dm_5">-</td>
+                            <td id="dm_6">-</td>
+                            <td id="dm_7">-</td>
+                            <td id="dm_8">-</td>
+                            <td id="dm_9">-</td>
+                            <td id="dm_10">-</td>
+                            <td id="dm_11">-</td>
+                            <td id="dm_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DEC (radianes)</strong></td>
+                            <td id="dec_1">-</td>
+                            <td id="dec_2">-</td>
+                            <td id="dec_3">-</td>
+                            <td id="dec_4">-</td>
+                            <td id="dec_5">-</td>
+                            <td id="dec_6">-</td>
+                            <td id="dec_7">-</td>
+                            <td id="dec_8">-</td>
+                            <td id="dec_9">-</td>
+                            <td id="dec_10">-</td>
+                            <td id="dec_11">-</td>
+                            <td id="dec_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>ES</strong></td>
+                            <td id="es_1">-</td>
+                            <td id="es_2">-</td>
+                            <td id="es_3">-</td>
+                            <td id="es_4">-</td>
+                            <td id="es_5">-</td>
+                            <td id="es_6">-</td>
+                            <td id="es_7">-</td>
+                            <td id="es_8">-</td>
+                            <td id="es_9">-</td>
+                            <td id="es_10">-</td>
+                            <td id="es_11">-</td>
+                            <td id="es_12">-</td>
+                        </tr>
+                        <tr style="background-color: #f0f9f7;">
+                            <td><strong>PRECIP MED (mm)</strong></td>
+                            <td id="precip_res_1">-</td>
+                            <td id="precip_res_2">-</td>
+                            <td id="precip_res_3">-</td>
+                            <td id="precip_res_4">-</td>
+                            <td id="precip_res_5">-</td>
+                            <td id="precip_res_6">-</td>
+                            <td id="precip_res_7">-</td>
+                            <td id="precip_res_8">-</td>
+                            <td id="precip_res_9">-</td>
+                            <td id="precip_res_10">-</td>
+                            <td id="precip_res_11">-</td>
+                            <td id="precip_res_12">-</td>
+                        </tr>
+                        <tr style="background-color: #f0f9f7;">
+                            <td><strong>TEM MAX (°C)</strong></td>
+                            <td id="tmax_res_1">-</td>
+                            <td id="tmax_res_2">-</td>
+                            <td id="tmax_res_3">-</td>
+                            <td id="tmax_res_4">-</td>
+                            <td id="tmax_res_5">-</td>
+                            <td id="tmax_res_6">-</td>
+                            <td id="tmax_res_7">-</td>
+                            <td id="tmax_res_8">-</td>
+                            <td id="tmax_res_9">-</td>
+                            <td id="tmax_res_10">-</td>
+                            <td id="tmax_res_11">-</td>
+                            <td id="tmax_res_12">-</td>
+                        </tr>
+                        <tr style="background-color: #f0f9f7;">
+                            <td><strong>TEM MIN (°C)</strong></td>
+                            <td id="tmin_res_1">-</td>
+                            <td id="tmin_res_2">-</td>
+                            <td id="tmin_res_3">-</td>
+                            <td id="tmin_res_4">-</td>
+                            <td id="tmin_res_5">-</td>
+                            <td id="tmin_res_6">-</td>
+                            <td id="tmin_res_7">-</td>
+                            <td id="tmin_res_8">-</td>
+                            <td id="tmin_res_9">-</td>
+                            <td id="tmin_res_10">-</td>
+                            <td id="tmin_res_11">-</td>
+                            <td id="tmin_res_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TC (°C)</strong></td>
+                            <td id="tc_1">-</td>
+                            <td id="tc_2">-</td>
+                            <td id="tc_3">-</td>
+                            <td id="tc_4">-</td>
+                            <td id="tc_5">-</td>
+                            <td id="tc_6">-</td>
+                            <td id="tc_7">-</td>
+                            <td id="tc_8">-</td>
+                            <td id="tc_9">-</td>
+                            <td id="tc_10">-</td>
+                            <td id="tc_11">-</td>
+                            <td id="tc_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TD (°C)</strong></td>
+                            <td id="td_1">-</td>
+                            <td id="td_2">-</td>
+                            <td id="td_3">-</td>
+                            <td id="td_4">-</td>
+                            <td id="td_5">-</td>
+                            <td id="td_6">-</td>
+                            <td id="td_7">-</td>
+                            <td id="td_8">-</td>
+                            <td id="td_9">-</td>
+                            <td id="td_10">-</td>
+                            <td id="td_11">-</td>
+                            <td id="td_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>TD^0.5</strong></td>
+                            <td id="td05_1">-</td>
+                            <td id="td05_2">-</td>
+                            <td id="td05_3">-</td>
+                            <td id="td05_4">-</td>
+                            <td id="td05_5">-</td>
+                            <td id="td05_6">-</td>
+                            <td id="td05_7">-</td>
+                            <td id="td05_8">-</td>
+                            <td id="td05_9">-</td>
+                            <td id="td05_10">-</td>
+                            <td id="td05_11">-</td>
+                            <td id="td05_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>L (cal/cc)</strong></td>
+                            <td id="l_1">-</td>
+                            <td id="l_2">-</td>
+                            <td id="l_3">-</td>
+                            <td id="l_4">-</td>
+                            <td id="l_5">-</td>
+                            <td id="l_6">-</td>
+                            <td id="l_7">-</td>
+                            <td id="l_8">-</td>
+                            <td id="l_9">-</td>
+                            <td id="l_10">-</td>
+                            <td id="l_11">-</td>
+                            <td id="l_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>tan(latitud) x tan(DEC)</strong></td>
+                            <td id="tantan_1">-</td>
+                            <td id="tantan_2">-</td>
+                            <td id="tantan_3">-</td>
+                            <td id="tantan_4">-</td>
+                            <td id="tantan_5">-</td>
+                            <td id="tantan_6">-</td>
+                            <td id="tantan_7">-</td>
+                            <td id="tantan_8">-</td>
+                            <td id="tantan_9">-</td>
+                            <td id="tantan_10">-</td>
+                            <td id="tantan_11">-</td>
+                            <td id="tantan_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>OM (radianes)</strong></td>
+                            <td id="om_1">-</td>
+                            <td id="om_2">-</td>
+                            <td id="om_3">-</td>
+                            <td id="om_4">-</td>
+                            <td id="om_5">-</td>
+                            <td id="om_6">-</td>
+                            <td id="om_7">-</td>
+                            <td id="om_8">-</td>
+                            <td id="om_9">-</td>
+                            <td id="om_10">-</td>
+                            <td id="om_11">-</td>
+                            <td id="om_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>RLD (mm)</strong></td>
+                            <td id="rld_1">-</td>
+                            <td id="rld_2">-</td>
+                            <td id="rld_3">-</td>
+                            <td id="rld_4">-</td>
+                            <td id="rld_5">-</td>
+                            <td id="rld_6">-</td>
+                            <td id="rld_7">-</td>
+                            <td id="rld_8">-</td>
+                            <td id="rld_9">-</td>
+                            <td id="rld_10">-</td>
+                            <td id="rld_11">-</td>
+                            <td id="rld_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Ra = 10 x (DM x RLD)/L (mm)</strong></td>
+                            <td id="ra_1">-</td>
+                            <td id="ra_2">-</td>
+                            <td id="ra_3">-</td>
+                            <td id="ra_4">-</td>
+                            <td id="ra_5">-</td>
+                            <td id="ra_6">-</td>
+                            <td id="ra_7">-</td>
+                            <td id="ra_8">-</td>
+                            <td id="ra_9">-</td>
+                            <td id="ra_10">-</td>
+                            <td id="ra_11">-</td>
+                            <td id="ra_12">-</td>
+                        </tr>
+                        <tr style="background-color: #fff3cd;">
+                            <td><strong>ETo (mm)</strong></td>
+                            <td id="eto_1">-</td>
+                            <td id="eto_2">-</td>
+                            <td id="eto_3">-</td>
+                            <td id="eto_4">-</td>
+                            <td id="eto_5">-</td>
+                            <td id="eto_6">-</td>
+                            <td id="eto_7">-</td>
+                            <td id="eto_8">-</td>
+                            <td id="eto_9">-</td>
+                            <td id="eto_10">-</td>
+                            <td id="eto_11">-</td>
+                            <td id="eto_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>PRECIP CONFIABLE (mm)</strong></td>
+                            <td id="precipconf_1">-</td>
+                            <td id="precipconf_2">-</td>
+                            <td id="precipconf_3">-</td>
+                            <td id="precipconf_4">-</td>
+                            <td id="precipconf_5">-</td>
+                            <td id="precipconf_6">-</td>
+                            <td id="precipconf_7">-</td>
+                            <td id="precipconf_8">-</td>
+                            <td id="precipconf_9">-</td>
+                            <td id="precipconf_10">-</td>
+                            <td id="precipconf_11">-</td>
+                            <td id="precipconf_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>DEFICIT (mm)</strong></td>
+                            <td id="deficit_1">-</td>
+                            <td id="deficit_2">-</td>
+                            <td id="deficit_3">-</td>
+                            <td id="deficit_4">-</td>
+                            <td id="deficit_5">-</td>
+                            <td id="deficit_6">-</td>
+                            <td id="deficit_7">-</td>
+                            <td id="deficit_8">-</td>
+                            <td id="deficit_9">-</td>
+                            <td id="deficit_10">-</td>
+                            <td id="deficit_11">-</td>
+                            <td id="deficit_12">-</td>
+                        </tr>
+                        <tr>
+                            <td><strong>MAI</strong></td>
+                            <td id="mai_1">-</td>
+                            <td id="mai_2">-</td>
+                            <td id="mai_3">-</td>
+                            <td id="mai_4">-</td>
+                            <td id="mai_5">-</td>
+                            <td id="mai_6">-</td>
+                            <td id="mai_7">-</td>
+                            <td id="mai_8">-</td>
+                            <td id="mai_9">-</td>
+                            <td id="mai_10">-</td>
+                            <td id="mai_11">-</td>
+                            <td id="mai_12">-</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('calculatorForm');
+        const resultsDiv = document.getElementById('results');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calcularEvapotranspiracion();
+        });
+
+        function calcularEvapotranspiracion() {
+            // Obtener datos generales
+            const anio = parseInt(document.getElementById('anio').value);
+            const elevacion = parseFloat(document.getElementById('elevacion').value);
+            const latitud = parseFloat(document.getElementById('latitud').value);
+            const longitud = parseFloat(document.getElementById('longitud').value);
+
+            // Obtener datos mensuales
+            const precipitacion = [];
+            const tmax = [];
+            const tmin = [];
+
+            for (let i = 1; i <= 12; i++) {
+                precipitacion.push(parseFloat(document.getElementById(`precip_${i}`).value));
+                tmax.push(parseFloat(document.getElementById(`tmax_${i}`).value));
+                tmin.push(parseFloat(document.getElementById(`tmin_${i}`).value));
+            }
+
+            // Validaciones
+            if (isNaN(anio) || isNaN(elevacion) || isNaN(latitud) || isNaN(longitud)) {
+                alert('Por favor complete todos los datos generales');
+                return;
+            }
+
+            // Días medios de cada mes (día juliano medio del mes)
+            const diasMedios = [15, 43, 74, 104, 135, 165, 196, 227, 257, 288, 318, 349];
+            
+            // Días por mes
+            const diasMes = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            
+            // Verificar si es año bisiesto
+            const esBisiesto = (anio % 4 === 0 && anio % 100 !== 0) || (anio % 400 === 0);
+            if (esBisiesto) {
+                diasMes[1] = 29;
+            }
+
+            // Convertir latitud a radianes (NOTA: latitud sur es negativa)
+            const latitudRad = latitud * Math.PI / 180;
+
+            // Arrays para almacenar resultados
+            const DM = diasMes;
+            const DEC = [];
+            const ES = [];
+            const TC = [];
+            const TD = [];
+            const TD05 = [];
+            const L = [];
+            const tantan = [];
+            const OM = [];
+            const RLD = [];
+            const Ra = [];
+            const ETo = [];
+            const precipConfiable = [];
+            const deficit = [];
+            const MAI = [];
+
+            // Cálculos para cada mes
+            for (let i = 0; i < 12; i++) {
+                const J = diasMedios[i];
+                
+                // ES = 1 + 0.033 sin(0.0172J)
+                ES[i] = 1 + 0.033 * Math.sin(0.0172 * J);
+                
+                // DEC = 0.409 sin(0.0172J - 1.39) [radianes]
+                DEC[i] = 0.409 * Math.sin(0.0172 * J - 1.39);
+                
+                // TC = (TMAX + TMIN) / 2
+                TC[i] = (tmax[i] + tmin[i]) / 2;
+                
+                // TD = TMAX - TMIN
+                TD[i] = tmax[i] - tmin[i];
+                
+                // TD^0.5
+                TD05[i] = Math.pow(TD[i], 0.5);
+                
+                // L = 595.9 - 0.55 x TC
+                L[i] = 595.9 - 0.55 * TC[i];
+                
+                // tan(latitud) x tan(DEC)
+                tantan[i] = Math.tan(latitudRad) * Math.tan(DEC[i]);
+                
+                // OM = Cos^-1 [-tan(latitud) x tan(DEC)]
+                OM[i] = Math.acos(-tantan[i]);
+                
+                // RLD = 916.732 x [OM x Sen(latitud) x Sen(DEC) + Cos(Latitud) x Cos(DEC) x Sen(OM)] / ES
+                RLD[i] = 916.732 * (OM[i] * Math.sin(latitudRad) * Math.sin(DEC[i]) + 
+                         Math.cos(latitudRad) * Math.cos(DEC[i]) * Math.sin(OM[i])) / ES[i];
+                
+                // Ra = 10 x (DM x RLD) / L
+                Ra[i] = 10 * (DM[i] * RLD[i]) / L[i];
+                
+                // ETo = 0.0023 x Ra x (TC + 17.8) x TD^0.5
+                ETo[i] = 0.0023 * Ra[i] * (TC[i] + 17.8) * TD05[i];
+                
+                // PRECIP CONFIABLE = -10 + 0.75 x PRECIP MEDIA
+                precipConfiable[i] = -10 + 0.75 * precipitacion[i];
+                
+                // DEFICIT = PRECIP CONFIABLE - ETo
+                deficit[i] = precipConfiable[i] - ETo[i];
+                
+                // MAI (por ahora dejamos en 0, se calculará después si es necesario)
+                MAI[i] =  precipConfiable[i] / ETo[i];
+            }
+
+            // Llenar la tabla con los resultados
+            llenarTablaResultados(DM, DEC, ES, precipitacion, tmax, tmin, TC, TD, TD05, L, 
+                                  tantan, OM, RLD, Ra, ETo, precipConfiable, deficit, MAI);
+
+            // Mostrar resultados
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            console.log('=== RESULTADOS ===');
+            console.log('ES:', ES);
+            console.log('DEC:', DEC);
+            console.log('ETo:', ETo);
+            console.log('==================');
+        }
+
+        function llenarTablaResultados(DM, DEC, ES, precip, tmax, tmin, TC, TD, TD05, L, 
+                                       tantan, OM, RLD, Ra, ETo, precipConf, deficit, MAI) {
+            for (let i = 1; i <= 12; i++) {
+                const idx = i - 1;
+                
+                document.getElementById(`dm_${i}`).textContent = DM[idx];
+                document.getElementById(`dec_${i}`).textContent = DEC[idx].toFixed(4);
+                document.getElementById(`es_${i}`).textContent = ES[idx].toFixed(4);
+                document.getElementById(`precip_res_${i}`).textContent = precip[idx].toFixed(1);
+                document.getElementById(`tmax_res_${i}`).textContent = tmax[idx].toFixed(1);
+                document.getElementById(`tmin_res_${i}`).textContent = tmin[idx].toFixed(1);
+                document.getElementById(`tc_${i}`).textContent = TC[idx].toFixed(2);
+                document.getElementById(`td_${i}`).textContent = TD[idx].toFixed(2);
+                document.getElementById(`td05_${i}`).textContent = TD05[idx].toFixed(3);
+                document.getElementById(`l_${i}`).textContent = L[idx].toFixed(2);
+                document.getElementById(`tantan_${i}`).textContent = tantan[idx].toFixed(4);
+                document.getElementById(`om_${i}`).textContent = OM[idx].toFixed(4);
+                document.getElementById(`rld_${i}`).textContent = RLD[idx].toFixed(2);
+                document.getElementById(`ra_${i}`).textContent = Ra[idx].toFixed(2);
+                document.getElementById(`eto_${i}`).textContent = ETo[idx].toFixed(2);
+                document.getElementById(`precipconf_${i}`).textContent = precipConf[idx].toFixed(2);
+                document.getElementById(`deficit_${i}`).textContent = deficit[idx].toFixed(2);
+                document.getElementById(`mai_${i}`).textContent = MAI[idx].toFixed(2);
+            }
+        }
+    </script>
+</body>
+</html>

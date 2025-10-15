@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Método Combinado - UNALM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background-color: #0C6854;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background-color: #0C6854;
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background-color: #084a3a;
+        }
+
+        .module-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-bottom: 20px;
+        }
+
+        .module-card h2 {
+            color: #0C6854;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .description {
+            background: #f0f9f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .formula-box {
+            background: #e8f5f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula-box h3 {
+            color: #0C6854;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #0C6854;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #084a3a;
+            box-shadow: 0 0 5px rgba(12, 104, 84, 0.3);
+        }
+
+        .form-group small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .btn-calculate {
+            background-color: #0C6854;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-calculate:hover {
+            background-color: #084a3a;
+        }
+
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results h3 {
+            color: #0C6854;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .result-item {
+            background: #f0f9f7;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+
+        .result-item strong {
+            color: #0C6854;
+        }
+
+        .result-section {
+            margin: 20px 0;
+            padding: 15px;
+            background: #e8f5f1;
+            border-radius: 5px;
+        }
+
+        .result-section h4 {
+            color: #0C6854;
+            margin-bottom: 10px;
+        }
+
+        .result-final {
+            background: #0C6854;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin-top: 15px;
+            font-size: 18px;
+        }
+
+        .result-final .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .example-box {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+
+        .example-box h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 15px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .header p {
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Universidad Nacional Agraria La Molina</h1>
+        <p>Maestría en Recursos Hídricos</p>
+        <p>Curso: Métodos de análisis en ingeniería de recursos hídricos</p>
+        <p>Autor: Luis Robles</p>
+    </div>
+
+    <div class="container">
+        <a href="../index.html" class="back-btn">← Volver al Menú</a>
+
+        <div class="module-card">
+            <h2>🔄 Método Combinado (Penman)</h2>
+            
+            <div class="description">
+                <p>
+                    El método combinado integra el balance de energía con el método aerodinámico para 
+                    calcular la evaporación. Combina los resultados del Ejemplo 3.5.1 (balance de energía: 
+                    E<sub>r</sub> = 7.10 mm/día) y del Ejemplo 3.5.2 (aerodinámico: E<sub>a</sub> = 7.45 mm/día).
+                </p>
+            </div>
+
+            <div class="formula-box">
+                <h3>📐 Fórmula del Método Combinado (Tabla 3.5.1)</h3>
+                <p><strong>E = [Δ/(Δ+γ)] × E<sub>r</sub> + [γ/(Δ+γ)] × E<sub>a</sub></strong></p>
+                <br>
+                <p><strong>Δ (Gradiente de presión de vapor) - Ecuación (3.2.10):</strong></p>
+                <p>Δ = (4098 × e<sub>s</sub>) / (237.3 + T)²</p>
+                <p>donde e<sub>s</sub> es la presión de vapor saturado (Tabla 3.2.1)</p>
+                <br>
+                <p><strong>γ (Constante psicrométrica) - Ecuación (3.5.25):</strong></p>
+                <p>γ = (C<sub>p</sub> × K<sub>h</sub> × P) / (0.622 × l<sub>v</sub> × K<sub>w</sub>)</p>
+                <p>• C<sub>p</sub> = 1,005 J/kg·K (calor específico aire)</p>
+                <p>• K<sub>h</sub>/K<sub>w</sub> = 1.00</p>
+                <p>• l<sub>v</sub> = 2,500 - 2.36×T (kJ/kg)</p>
+                <p>• P = presión atmosférica (Pa)</p>
+            </div>
+
+            <div class="example-box">
+                <h4>💡 Ejemplo 3.5.3 (Ven Te Chow)</h4>
+                <p><strong>Datos:</strong></p>
+                <p>• R<sub>n</sub> = 200 W/m², T = 25°C, HR = 40%, P = 101.3 kPa, u<sub>2</sub> = 3 m/s</p>
+                <p>• E<sub>r</sub> = 7.10 mm/día (del Ejemplo 3.5.1)</p>
+                <p>• E<sub>a</sub> = 7.45 mm/día (del Ejemplo 3.5.2)</p>
+                <p>• γ = 67.1 Pa/°C, Δ = 188.7 Pa/°C</p>
+                <p><strong>Resultado esperado:</strong> E = 7.2 mm/día</p>
+            </div>
+
+            <form id="calculatorForm">
+                <div class="form-group">
+                    <label for="evaporacionBalance">Evaporación por Balance de Energía (E<sub>r</sub>):</label>
+                    <input type="number" id="evaporacionBalance" step="0.01" value="7.10" required>
+                    <small>Unidades: mm/día (del método de balance de energía)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="evaporacionAero">Evaporación por Método Aerodinámico (E<sub>a</sub>):</label>
+                    <input type="number" id="evaporacionAero" step="0.01" value="7.45" required>
+                    <small>Unidades: mm/día (del método aerodinámico)</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="temperatura">Temperatura del aire (T):</label>
+                    <input type="number" id="temperatura" step="0.1" value="25" required>
+                    <small>Unidades: °C</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="presion">Presión atmosférica (P):</label>
+                    <input type="number" id="presion" step="0.1" value="101.3" required>
+                    <small>Unidades: kPa</small>
+                </div>
+
+                <button type="submit" class="btn-calculate">🔬 Calcular Evaporación Combinada</button>
+            </form>
+        </div>
+
+        <div class="results" id="results">
+            <h3>📊 Resultados del Cálculo</h3>
+            
+            <div class="result-section">
+                <h4>Parámetros Calculados:</h4>
+                <div class="result-item">
+                    <strong>Calor latente de vaporización (l<sub>v</sub>):</strong>
+                    <span id="calorLatente">-</span> J/kg
+                </div>
+                
+                <div class="result-item">
+                    <strong>Constante psicrométrica (γ):</strong>
+                    <span id="gamma">-</span> Pa/°C
+                </div>
+
+                <div class="result-item">
+                    <strong>Presión de vapor saturado (e<sub>s</sub>):</strong>
+                    <span id="presionSaturada">-</span> Pa
+                </div>
+
+                <div class="result-item">
+                    <strong>Gradiente Δ:</strong>
+                    <span id="delta">-</span> Pa/°C
+                </div>
+            </div>
+
+            <div class="result-section">
+                <h4>Pesos de Ponderación:</h4>
+                <div class="result-item">
+                    <strong>Δ/(Δ+γ):</strong>
+                    <span id="peso1">-</span>
+                </div>
+
+                <div class="result-item">
+                    <strong>γ/(Δ+γ):</strong>
+                    <span id="peso2">-</span>
+                </div>
+            </div>
+
+            <div class="result-final">
+                <div>Evaporación por Método Combinado</div>
+                <div class="value" id="evaporacionCombinada">-</div>
+                <div>mm/día</div>
+            </div>
+
+            <div style="margin-top: 20px; padding: 15px; background: #e8f5f1; border-radius: 5px;">
+                <strong>📝 Procedimiento:</strong>
+                <ol style="margin-top: 10px; padding-left: 20px; line-height: 1.8;">
+                    <li>Calcular l<sub>v</sub> = 2,500 - 2.36×T (kJ/kg)</li>
+                    <li>Calcular γ = (C<sub>p</sub>×K<sub>h</sub>×P) / (0.622×l<sub>v</sub>×K<sub>w</sub>)</li>
+                    <li>Obtener e<sub>s</sub> de Tabla 3.2.1</li>
+                    <li>Calcular Δ = (4098×e<sub>s</sub>) / (237.3+T)²</li>
+                    <li>Aplicar E = [Δ/(Δ+γ)]×E<sub>r</sub> + [γ/(Δ+γ)]×E<sub>a</sub></li>
+                </ol>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Tabla 3.2.1 - Presión de vapor de saturación (Pa)
+        const presionVaporSaturacion = {
+            '-20': 125, '-10': 286, 0: 611, 5: 872, 10: 1227,
+            15: 1704, 20: 2337, 25: 3167, 30: 4243, 35: 5624, 40: 7378
+        };
+
+        function interpolar(tabla, T) {
+            const temperaturas = Object.keys(tabla).map(Number).sort((a, b) => a - b);
+            
+            if (tabla[T] !== undefined) {
+                return tabla[T];
+            }
+            
+            let T1 = temperaturas[0], T2 = temperaturas[temperaturas.length - 1];
+            for (let i = 0; i < temperaturas.length - 1; i++) {
+                if (temperaturas[i] <= T && temperaturas[i + 1] >= T) {
+                    T1 = temperaturas[i];
+                    T2 = temperaturas[i + 1];
+                    break;
+                }
+            }
+            
+            const val1 = tabla[T1];
+            const val2 = tabla[T2];
+            return val1 + (val2 - val1) * (T - T1) / (T2 - T1);
+        }
+
+        const form = document.getElementById('calculatorForm');
+        const resultsDiv = document.getElementById('results');
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calcularEvaporacion();
+        });
+
+        function calcularEvaporacion() {
+            // Obtener valores
+            const Er = parseFloat(document.getElementById('evaporacionBalance').value);
+            const Ea = parseFloat(document.getElementById('evaporacionAero').value);
+            const T = parseFloat(document.getElementById('temperatura').value);
+            const P = parseFloat(document.getElementById('presion').value);
+
+            // Validar
+            if (isNaN(Er) || isNaN(Ea) || isNaN(T) || isNaN(P)) {
+                alert('Por favor ingrese valores válidos');
+                return;
+            }
+
+            // Constantes
+            const Cp = 1005; // J/kg·K (calor específico del aire)
+            const Kh_Kw = 1.00; // Relación K_h/K_w
+
+            // 1. Calor latente de vaporización (J/kg)
+            const lv_kJ = 2500 - 2.36 * T; // kJ/kg
+            const lv = lv_kJ * 1000; // Convertir a J/kg
+
+            // 2. Constante psicrométrica γ (Pa/°C)
+            // γ = (Cp × Kh × P) / (0.622 × lv × Kw)
+            // γ = (Cp × Kh_Kw × P × 1000) / (0.622 × lv)
+            const gamma = (Cp * Kh_Kw * P * 1000) / (0.622 * lv);
+
+            // 3. Presión de vapor saturado (Pa) - Tabla 3.2.1
+            const es = interpolar(presionVaporSaturacion, T);
+
+            // 4. Gradiente Δ (Pa/°C)
+            // Δ = (4098 × es) / (237.3 + T)²
+            const delta = (4098 * es) / Math.pow(237.3 + T, 2);
+
+            // 5. Pesos de ponderación
+            const peso1 = delta / (delta + gamma);
+            const peso2 = gamma / (delta + gamma);
+
+            // 6. Evaporación combinada (mm/día)
+            // E = [Δ/(Δ+γ)] × Er + [γ/(Δ+γ)] × Ea
+            const E = peso1 * Er + peso2 * Ea;
+
+            // Mostrar resultados
+            document.getElementById('calorLatente').textContent = lv.toFixed(0);
+            document.getElementById('gamma').textContent = gamma.toFixed(1);
+            document.getElementById('presionSaturada').textContent = Math.round(es);
+            document.getElementById('delta').textContent = delta.toFixed(1);
+            document.getElementById('peso1').textContent = peso1.toFixed(3);
+            document.getElementById('peso2').textContent = peso2.toFixed(3);
+            document.getElementById('evaporacionCombinada').textContent = E.toFixed(2);
+
+            resultsDiv.classList.add('show');
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            // Log detallado
+            console.log('=== MÉTODO COMBINADO (PENMAN) ===');
+            console.log('DATOS DE ENTRADA:');
+            console.log('  E_r =', Er, 'mm/día (balance energía)');
+            console.log('  E_a =', Ea, 'mm/día (aerodinámico)');
+            console.log('  T =', T, '°C');
+            console.log('  P =', P, 'kPa');
+            console.log('PARÁMETROS:');
+            console.log('  l_v =', lv_kJ.toFixed(3), 'kJ/kg =', lv.toFixed(0), 'J/kg');
+            console.log('  γ =', gamma.toFixed(1), 'Pa/°C');
+            console.log('  e_s =', Math.round(es), 'Pa (Tabla 3.2.1)');
+            console.log('  Δ =', delta.toFixed(1), 'Pa/°C');
+            console.log('PESOS:');
+            console.log('  Δ/(Δ+γ) =', peso1.toFixed(3));
+            console.log('  γ/(Δ+γ) =', peso2.toFixed(3));
+            console.log('  Suma pesos =', (peso1+peso2).toFixed(3), '(debe ser 1.000)');
+            console.log('RESULTADO:');
+            console.log('  E =', peso1.toFixed(3), '×', Er, '+', peso2.toFixed(3), '×', Ea);
+            console.log('  E =', (peso1*Er).toFixed(2), '+', (peso2*Ea).toFixed(2));
+            console.log('  E =', E.toFixed(2), 'mm/día');
+            console.log('================================');
+        }
+    </script>
+</body>
+</html>
