@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lámina Infiltrada - Smith Parlange - UNALM</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .header {
+            background-color: #0C6854;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 13px;
+            margin: 3px 0;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 30px auto;
+            padding: 20px;
+        }
+
+        .back-btn {
+            display: inline-block;
+            background-color: #0C6854;
+            color: white;
+            padding: 8px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+
+        .back-btn:hover {
+            background-color: #084a3a;
+        }
+
+        .module-card {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-bottom: 20px;
+        }
+
+        .module-card h2 {
+            color: #0C6854;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .description {
+            background: #f0f9f7;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .formula-box {
+            background: #e8f5f1;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .formula-box h3 {
+            color: #0C6854;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #0C6854;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #084a3a;
+            box-shadow: 0 0 5px rgba(12, 104, 84, 0.3);
+        }
+
+        .form-group small {
+            display: block;
+            color: #666;
+            margin-top: 5px;
+            font-size: 13px;
+        }
+
+        .btn-calculate {
+            background-color: #0C6854;
+            color: white;
+            padding: 15px 40px;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 10px;
+            transition: background-color 0.3s;
+        }
+
+        .btn-calculate:hover {
+            background-color: #084a3a;
+        }
+
+        .results {
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .results.show {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .results h3 {
+            color: #0C6854;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        .result-item {
+            background: #f0f9f7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border-left: 3px solid #0C6854;
+        }
+
+        .result-item strong {
+            color: #0C6854;
+            font-size: 16px;
+        }
+
+        .result-final {
+            background: #0C6854;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .result-final .value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .chart-container {
+            margin-top: 30px;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            border-left: 4px solid #0C6854;
+        }
+
+        .chart-container h3 {
+            color: #0C6854;
+            margin-bottom: 20px;
+            font-size: 20px;
+        }
+
+        canvas {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+            color: #856404;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .module-card {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 18px;
+            }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <h1>Universidad Nacional Agraria La Molina</h1>
+        <p>Maestría en Recursos Hídricos</p>
+        <p>Curso: Métodos de análisis en ingeniería de recursos hídricos</p>
+        <p>Docente: Dr. Eduardo Chavarri Velarde</p>
+    </div>
+
+    <!-- Contenido -->
+    <div class="container">
+        <a href="../index.html" class="back-btn">← Volver al Menú</a>
+
+        <div class="module-card">
+            <h2>💧 Lámina Infiltrada - Ecuación de Smith Parlange</h2>
+            
+            <div class="description">
+                <p>
+                    Este módulo calcula la lámina infiltrada acumulada utilizando la ecuación de Smith Parlange 
+                    mediante el método de Newton-Raphson. Determina el tiempo de encharcamiento y la evolución 
+                    de la infiltración después del encharcamiento.
+                </p>
+            </div>
+
+            <div class="formula-box">
+                <h3>📐 Fórmulas Principales</h3>
+                <p><strong>Parámetro B:</strong></p>
+                <p>B = G × 10 × (θs - θi) / 100</p>
+                <br>
+                <p><strong>Lámina antes del encharcamiento (F1):</strong></p>
+                <p>F1 = B × ln(1 / (1 - Ks/intp))</p>
+                <br>
+                <p><strong>Tiempo al encharcamiento (tp):</strong></p>
+                <p>tp = [F1 - B × (1 - 1/exp(F1/B))] × 60 / Ks</p>
+                <br>
+                <p><strong>Método Newton-Raphson:</strong></p>
+                <p>r = [F - B × (1 - 1/exp(F/B))] × 60/Ks - t</p>
+                <p>dr/dF = [1 - 1/exp(F/B)] × 60/Ks</p>
+                <p>ΔF = -r / (dr/dF)</p>
+            </div>
+
+            <!-- Formulario -->
+            <form id="calculatorForm">
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="t_sim">Tiempo de simulación (hr):</label>
+                        <input type="number" id="t_sim" step="0.1" value="4" required>
+                        <small>Tiempo total de análisis en horas</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="delta_t">Δt - Paso de tiempo (min):</label>
+                        <input type="number" id="delta_t" step="1" value="1" required>
+                        <small>Intervalo de cálculo en minutos</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="ks">Ks - Conductividad hidráulica saturada (mm/h):</label>
+                        <input type="number" id="ks" step="0.1" value="5" required>
+                        <small>Conductividad del suelo saturado</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="G">G - Parámetro de succión (cm):</label>
+                        <input type="number" id="G" step="0.1" value="20" required>
+                        <small>Parámetro de succión capilar</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hum_sat">Humedad saturada (%):</label>
+                        <input type="number" id="hum_sat" step="1" min="0" max="100" value="30" required>
+                        <small>Contenido volumétrico saturado</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="hum_ini">Humedad inicial (%):</label>
+                        <input type="number" id="hum_ini" step="1" min="0" max="100" value="10" required>
+                        <small>Contenido volumétrico inicial</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="intp">intp - Intensidad de precipitación (mm/h):</label>
+                        <input type="number" id="intp" step="0.1" value="10" required>
+                        <small>Tasa de aplicación de agua</small>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-calculate">🔬 Calcular Lámina Infiltrada</button>
+            </form>
+        </div>
+
+        <!-- Resultados -->
+        <div class="results" id="results">
+            <h3>📊 Resultados del Cálculo</h3>
+            
+            <div id="warningContainer"></div>
+
+            <div class="result-item">
+                <strong>Parámetro B:</strong>
+                <span id="param_b">-</span> mm
+            </div>
+
+            <div class="result-item">
+                <strong>Lámina antes del encharcamiento (F1):</strong>
+                <span id="f1">-</span> mm
+            </div>
+
+            <div class="result-final">
+                <div>Tiempo al Encharcamiento</div>
+                <div class="value" id="tp">-</div>
+                <div>minutos</div>
+            </div>
+
+            <div class="result-item">
+                <strong>Tiempo redondeado para cálculo:</strong>
+                <span id="tpe">-</span> minutos
+            </div>
+        </div>
+
+        <!-- Gráfico -->
+        <div class="chart-container" id="chartContainer" style="display: none;">
+            <h3>📈 Lámina infiltrada después del encharcamiento</h3>
+            <canvas id="infiltrationChart"></canvas>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script>
+        const form = document.getElementById('calculatorForm');
+        const resultsDiv = document.getElementById('results');
+        const chartContainer = document.getElementById('chartContainer');
+        let infiltrationChart = null;
+
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            calcularLaminaInfiltrada();
+        });
+
+        function calcularLaminaInfiltrada() {
+            // Obtener datos de entrada
+            const t_sim = parseFloat(document.getElementById('t_sim').value);
+            const delta_t = parseFloat(document.getElementById('delta_t').value);
+            const ks = parseFloat(document.getElementById('ks').value);
+            const G = parseFloat(document.getElementById('G').value);
+            const hum_sat = parseFloat(document.getElementById('hum_sat').value);
+            const hum_ini = parseFloat(document.getElementById('hum_ini').value);
+            const intp = parseFloat(document.getElementById('intp').value);
+
+            // Validaciones
+            if (isNaN(t_sim) || isNaN(delta_t) || isNaN(ks) || isNaN(G) || 
+                isNaN(hum_sat) || isNaN(hum_ini) || isNaN(intp)) {
+                alert('Por favor complete todos los campos con valores válidos');
+                return;
+            }
+
+            if (hum_sat <= hum_ini) {
+                alert('La humedad saturada debe ser mayor que la humedad inicial');
+                return;
+            }
+
+            if (ks >= intp) {
+                alert('La intensidad de precipitación debe ser mayor que Ks para que ocurra encharcamiento');
+                return;
+            }
+
+            const t_sim_min = t_sim * 60; // Tiempo total en minutos
+
+            // Cálculo del parámetro B
+            const B = G * 10 * (hum_sat - hum_ini) / 100; // mm
+
+            // Cálculo de la lámina al inicio antes del encharcamiento (F1)
+            const den = 1 - ks / intp;
+            const F1 = B * Math.log(1 / den); // mm
+
+            // Cálculo del tiempo al encharcamiento
+            const ter1 = Math.exp(F1 / B);
+            const tp = (F1 - B * (1 - 1 / ter1)) * 60 / ks; // minutos
+
+            const tpe = Math.round(tp);
+
+            // Check si el encharcamiento ocurre dentro del tiempo de simulación
+            const warningContainer = document.getElementById('warningContainer');
+            if (tp >= t_sim_min) {
+                warningContainer.innerHTML = `
+                    <div class="warning">
+                        ⚠️ <strong>Advertencia:</strong> El tiempo de encharcamiento (${tp.toFixed(2)} min) 
+                        supera al tiempo de simulación (${t_sim_min} min). No se calculará la lámina infiltrada post-encharcamiento.
+                    </div>
+                `;
+                
+                // Mostrar solo resultados parciales
+                document.getElementById('param_b').textContent = B.toFixed(2);
+                document.getElementById('f1').textContent = F1.toFixed(2);
+                document.getElementById('tp').textContent = tp.toFixed(2);
+                document.getElementById('tpe').textContent = tpe;
+
+                resultsDiv.classList.add('show');
+                chartContainer.style.display = 'none';
+                return;
+            }
+
+            warningContainer.innerHTML = '';
+
+            // Arrays para almacenar resultados
+            const Facum = [];
+            const tacum = [];
+
+            // Cálculo de la lámina infiltrada después del encharcamiento
+            for (let j = (tpe + 1); j <= t_sim_min; j += delta_t) {
+                let itera = 0;
+                let delta_F = 10;
+                let F = 0.0;
+
+                // Método Newton-Raphson
+                while (Math.abs(delta_F) > 0.001) {
+                    itera++;
+
+                    if (itera === 1) {
+                        F = (ks * tpe) / 60;
+                    } else {
+                        F = F + delta_F;
+                    }
+
+                    const denomi = Math.exp(F / B);
+                    const r = (F - B * (1 - (1 / denomi))) * 60 / ks - j;
+                    const drdF = (1 - 1 / denomi) * 60 / ks;
+                    delta_F = -r / drdF;
+
+                    // Prevenir bucle infinito
+                    if (itera > 1000) {
+                        console.warn('Máximo de iteraciones alcanzado en j =', j);
+                        break;
+                    }
+                }
+
+                Facum.push(F);
+                tacum.push(j * delta_t);
+            }
+
+            // Mostrar resultados
+            document.getElementById('param_b').textContent = B.toFixed(2);
+            document.getElementById('f1').textContent = F1.toFixed(2);
+            document.getElementById('tp').textContent = tp.toFixed(2);
+            document.getElementById('tpe').textContent = tpe;
+
+            resultsDiv.classList.add('show');
+
+            // Crear gráfico
+            crearGrafico(tacum, Facum);
+            chartContainer.style.display = 'block';
+
+            // Scroll suave
+            resultsDiv.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+
+            console.log('=== SMITH PARLANGE ===');
+            console.log('B:', B, 'mm');
+            console.log('F1:', F1, 'mm');
+            console.log('tp:', tp, 'min');
+            console.log('Puntos calculados:', tacum.length);
+            console.log('======================');
+        }
+
+        function crearGrafico(tacum, Facum) {
+            // Destruir gráfico anterior si existe
+            if (infiltrationChart) {
+                infiltrationChart.destroy();
+            }
+
+            const ctx = document.getElementById('infiltrationChart').getContext('2d');
+            
+            infiltrationChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: tacum,
+                    datasets: [{
+                        label: 'Lámina infiltrada (mm)',
+                        data: Facum,
+                        borderColor: '#0C6854',
+                        backgroundColor: 'rgba(12, 104, 84, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 2,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: true,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top'
+                        },
+                        title: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Tiempo (min)',
+                                font: { size: 14 }
+                            },
+                            grid: {
+                                display: true
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'Lámina infiltrada (mm)',
+                                font: { size: 14 }
+                            },
+                            grid: {
+                                display: true
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

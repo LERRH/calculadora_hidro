@@ -90,6 +90,13 @@
             font-size: 16px;
         }
 
+        .input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
         .form-group {
             margin-bottom: 20px;
         }
@@ -227,6 +234,10 @@
             .profiles-grid {
                 grid-template-columns: 1fr;
             }
+
+            .input-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -255,37 +266,46 @@
             </div>
 
             <div class="formula-box">
-                <h3>📐 Fórmulas utilizadas</h3>
-                <p><strong>Temperatura (°K):</strong> t(i) = tem + 273</p>
-                <p><strong>Presión atmosférica (kPa):</strong> p(i) = 101.3 × exp(-α/Ra × t(i))</p>
-                <p><strong>Densidad del aire (kg/m³):</strong> den(i) = (p(i) × 1000) / (Ra × t(i))</p>
-                <p><strong>Presión de vapor (kPa):</strong> es(i) = Pr_vap_sat(t(i) - 273) / 10</p>
-                <p><strong>Humedad específica (kg/kg):</strong> qh(i) = 0.622 × es(i) / (p(i) - 0.378 × es(i))</p>
-                <br>
-                <p><strong>Donde:</strong></p>
-                <p>• Ra = 287 J/(kgK) - Constante específica del aire</p>
-                <p>• α = 6.5 (Gradiente térmico)</p>
-                <p>• Pr_vap_sat - Presión de vapor saturado (fórmula empírica)</p>
+                <h3>📐 Datos de Entrada Requeridos</h3>
+                <p>• <strong>Altura total (m):</strong> Altura máxima de la columna de aire</p>
+                <p>• <strong>Alfa (°C/km):</strong> Gradiente térmico adiabático</p>
+                <p>• <strong>Ra (J/kgK):</strong> Constante específica del aire</p>
+                <p>• <strong>Temperatura (°C):</strong> Temperatura del aire en la superficie</p>
+                <p>• <strong>Número de capas:</strong> Divisiones de la columna para el cálculo</p>
             </div>
 
             <!-- Formulario -->
             <form id="calculatorForm">
-                <div class="form-group">
-                    <label for="temperatura">Temperatura en la superficie (°C):</label>
-                    <input type="number" id="temperatura" step="0.1" value="35" required>
-                    <small>Temperatura del aire al nivel del suelo</small>
-                </div>
+                <div class="input-grid">
+                    <div class="form-group">
+                        <label for="alturaTotal">Altura total (m):</label>
+                        <input type="number" id="alturaTotal" step="1" value="10000" required>
+                        <small>Altura máxima de la columna de aire</small>
+                    </div>
 
-                <div class="form-group">
-                    <label for="alturaTotal">Altura total de la columna (m):</label>
-                    <input type="number" id="alturaTotal" step="1" value="10000" required>
-                    <small>Altura máxima para el análisis de la columna de aire</small>
-                </div>
+                    <div class="form-group">
+                        <label for="alfa">Alfa - Gradiente térmico (°C/km):</label>
+                        <input type="number" id="alfa" step="0.1" value="6.5" required>
+                        <small>Típicamente 6.5 °C/km</small>
+                    </div>
 
-                <div class="form-group">
-                    <label for="numCapas">Número de capas:</label>
-                    <input type="number" id="numCapas" step="1" min="2" max="100" value="5" required>
-                    <small>Divisiones de la columna para el cálculo (2-100 capas)</small>
+                    <div class="form-group">
+                        <label for="ra">Ra - Constante del aire (J/kgK):</label>
+                        <input type="number" id="ra" step="0.1" value="287" required>
+                        <small>Valor estándar: 287 J/kgK</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="temperatura">Temperatura superficial (°C):</label>
+                        <input type="number" id="temperatura" step="0.1" value="30" required>
+                        <small>Temperatura del aire al nivel del suelo</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numCapas">Número de capas:</label>
+                        <input type="number" id="numCapas" step="1" min="2" max="100" value="5" required>
+                        <small>Divisiones de la columna (2-100)</small>
+                    </div>
                 </div>
 
                 <button type="submit" class="btn-calculate">🔬 Calcular Agua Precipitable</button>
@@ -294,35 +314,130 @@
 
         <!-- Resultados -->
         <div class="results" id="results">
-            <h3>📊 Resultados del Cálculo</h3>
+            <h3>📊 Cálculo del agua precipitable</h3>
             
+            <!-- Tabla de resultados -->
+            <div style="overflow-x: auto;">
+                <table id="resultsTable" style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                    <thead>
+                        <tr style="background-color: #0C6854; color: white;">
+                            <th style="padding: 12px; border: 1px solid #ddd;">Elevación (Z)<br><small>km</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Temperatura<br><small>°C</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Temperatura<br><small>°K</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Presión del aire (p)<br><small>kPa</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Densidad (ρa)<br><small>kg/m₃</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Presión de vapor (e)<br><small>kPa</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Humedad específica (qv)<br><small>kg/kg</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Promedio sobre el momento<br>(qv medio)<br><small>kg/kg</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Densidad promedio (ρa)<br><small>kg/m₃</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Masa incremental (Δm)<br><small>kg</small></th>
+                            <th style="padding: 12px; border: 1px solid #ddd;">Porcentaje de la masa total<br><small>%</small></th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- Se llenará con JavaScript -->
+                    </tbody>
+                    <tfoot>
+                        <tr style="background-color: #f0f9f7; font-weight: bold;">
+                            <td colspan="9" style="padding: 12px; border: 1px solid #ddd; text-align: right;">m<sub>n</sub></td>
+                            <td style="padding: 12px; border: 1px solid #ddd; text-align: center;" id="totalMasa">-</td>
+                            <td style="padding: 12px; border: 1px solid #ddd; text-align: center;">100.0</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
             <div class="result-final">
                 <div>Agua Precipitable Total</div>
                 <div class="value" id="aguaPrecipitable">-</div>
                 <div>mm</div>
+            </div>
+
+            <!-- Explicación de cálculos -->
+            <div style="margin-top: 30px; padding: 25px; background: #f0f9f7; border-radius: 8px; border-left: 4px solid #0C6854;">
+                <h3 style="color: #0C6854; margin-bottom: 20px; font-size: 18px;">📋 Metodología de Cálculo por Columnas</h3>
+                
+                <div style="line-height: 1.8;">
+                    <p style="margin-bottom: 15px;"><strong>1. Elevación (Z) [km]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        Z<sub>i</sub> = i × Δh / 1000, donde Δh = Altura total / Número de capas
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>2. Temperatura [°C]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        T<sub>i</sub> = T<sub>i-1</sub> - α × (Δh / 1000)<br>
+                        T<sub>0</sub> = Temperatura superficial
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>3. Temperatura [°K]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        T(°K) = T(°C) + 273
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>4. Presión del aire (p) [kPa]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        p<sub>i</sub> = p<sub>i-1</sub> × (T<sub>i</sub> / T<sub>i-1</sub>)<sup>expo</sup><br>
+                        donde: expo = 9.81 × 1000 / (α × Ra)<br>
+                        p<sub>0</sub> = 101.3 kPa
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>5. Densidad del aire (ρa) [kg/m³]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        ρa = (p × 1000) / (Ra × T)<br>
+                        donde: Ra = constante específica del aire (J/kgK), T en °K
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>6. Presión de vapor (e) [kPa]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        e<sub>s</sub> = 0.61 × exp(17.27 × T / (237.3 + T))<br>
+                        donde: T en °C (Fórmula de Magnus-Tetens)
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>7. Humedad específica (q<sub>v</sub>) [kg/kg]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        q<sub>v</sub> = 0.622 × e / (p - 0.378 × e)
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>8. Promedio sobre el momento (q<sub>v</sub> medio) [kg/kg]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        q<sub>v medio,i</sub> = (q<sub>v,i-1</sub> + q<sub>v,i</sub>) / 2<br>
+                        <em>Promedio entre la capa actual y la anterior</em>
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>9. Densidad promedio (ρa medio) [kg/m³]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        ρa<sub>medio,i</sub> = (ρa<sub>i-1</sub> + ρa<sub>i</sub>) / 2<br>
+                        <em>Promedio entre la capa actual y la anterior</em>
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>10. Masa incremental (Δm) [kg]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        Δm<sub>i</sub> = q<sub>v medio</sub> × ρa<sub>medio</sub> × A × (z<sub>i</sub> - z<sub>i-1</sub>) × 1000<br>
+                        donde: A = 1 m² (área unitaria)<br>
+                        <em>Se multiplica por 1000 porque z está en km</em>
+                    </p>
+
+                    <p style="margin-bottom: 15px;"><strong>11. Porcentaje de la masa total [%]:</strong></p>
+                    <p style="margin-left: 20px; margin-bottom: 15px;">
+                        % = (Δm<sub>i</sub> / Σ Δm) × 100<br>
+                        donde: Σ Δm = suma total de masas incrementales
+                    </p>
+
+                    <div style="margin-top: 25px; padding: 15px; background: white; border-radius: 5px; border: 2px solid #0C6854;">
+                        <p style="color: #0C6854; font-weight: bold; margin-bottom: 10px;">💧 Agua Precipitable Total:</p>
+                        <p style="margin-left: 20px;">
+                            m<sub>n</sub> = Σ Δm = suma de todas las masas incrementales [kg]<br>
+                            <strong>Agua precipitable = m<sub>n</sub> mm</strong> (para área unitaria de 1 m²)
+                        </p>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Gráficos -->
         <div class="chart-container" id="chartsContainer" style="display: none;">
             <h3>📈 Perfiles Atmosféricos</h3>
-            <div class="profiles-grid">
-                <div>
-                    <canvas id="tempChart"></canvas>
-                </div>
-                <div>
-                    <canvas id="presionChart"></canvas>
-                </div>
-                <div>
-                    <canvas id="densidadChart"></canvas>
-                </div>
-                <div>
-                    <canvas id="vaporChart"></canvas>
-                </div>
-                <div>
-                    <canvas id="humedadChart"></canvas>
-                </div>
-            </div>
+            <p style="color: #666; margin-bottom: 20px;">Los gráficos están en desarrollo y se habilitarán próximamente.</p>
         </div>
     </div>
 
@@ -330,16 +445,12 @@
     <script>
         const form = document.getElementById('calculatorForm');
         const resultsDiv = document.getElementById('results');
-        const chartsContainer = document.getElementById('chartsContainer');
-
-        // Constantes
-        const Ra = 287; // J/(kgK)
-        const alfa = 6.5; // Gradiente T
 
         // Función para calcular presión de vapor saturado (kPa)
         function Pr_vap_sat(T) {
             // T en °C
-            return Math.exp(16.4 - 3885.7 / (T + 230.17));
+            // Fórmula: es = 0.61 * exp(17.27T / (237.3 + T))
+            return 0.61 * Math.exp((17.27 * T) / (237.3 + T));
         }
 
         form.addEventListener('submit', function(e) {
@@ -349,12 +460,14 @@
 
         function calcularAguaPrecipitable() {
             // Obtener valores de entrada
-            const tem = parseFloat(document.getElementById('temperatura').value);
             const alt_total = parseFloat(document.getElementById('alturaTotal').value);
+            const alfa = parseFloat(document.getElementById('alfa').value);
+            const Ra = parseFloat(document.getElementById('ra').value);
+            const tem = parseFloat(document.getElementById('temperatura').value);
             const num_capas = parseInt(document.getElementById('numCapas').value);
 
             // Validaciones
-            if (isNaN(tem) || isNaN(alt_total) || isNaN(num_capas)) {
+            if (isNaN(alt_total) || isNaN(alfa) || isNaN(Ra) || isNaN(tem) || isNaN(num_capas)) {
                 alert('Por favor ingrese valores numéricos válidos');
                 return;
             }
@@ -364,51 +477,69 @@
                 return;
             }
 
+            // Calcular incremento de altura por capa
             const delta_alt = alt_total / num_capas;
 
             // Arrays para almacenar resultados
-            const npuntos = 6;
-            const elev = new Array(npuntos);
-            const t = new Array(npuntos);
-            const p = new Array(npuntos);
-            const den = new Array(npuntos);
-            const es = new Array(npuntos);
-            const qh = new Array(npuntos);
+            const npuntos = num_capas + 1;
+            const elev = new Array(npuntos);      // Elevación en m
+            const elevKm = new Array(npuntos);    // Elevación en km
+            const tempC = new Array(npuntos);     // Temperatura en °C
+            const tempK = new Array(npuntos);     // Temperatura en °K
+            const p = new Array(npuntos);         // Presión del aire en kPa
+            const den = new Array(npuntos);       // Densidad del aire en kg/m³
+            const es = new Array(npuntos);        // Presión de vapor en kPa
+            const qh = new Array(npuntos);        // Humedad específica en kg/kg
 
-            // Inicialización
-            for (let i = 0; i < npuntos; i++) {
-                t[i] = tem + 273; // K
-                p[i] = 101.3; // kPa
-                den[i] = 0;
-                es[i] = 0;
-                qh[i] = 0;
-                elev[i] = 0;
-            }
+            // Inicialización de la primera capa (superficie)
+            elev[0] = 0;
+            elevKm[0] = 0;
+            tempC[0] = tem;
+            tempK[0] = tem + 273;
+            p[0] = 101.3;
+            den[0] = 0;
+            es[0] = 0;
+            qh[0] = 0;
 
-            let l_prec = 0;
-
-            // Cálculo iterativo
+            // Exponente para la fórmula de presión
             const expo = 9.81 * 1000 / (alfa * Ra);
 
-            for (let i = 1; i <= num_capas; i++) {
-                t[i] = t[i-1] - ((alfa) * delta_alt / 1000);
-                p[i] = p[i-1] * Math.pow((t[i] / t[i-1]), expo);
-                den[i] = (p[i] * 1000) / (Ra * t[i]);
-                es[i] = Pr_vap_sat(t[i] - 273) / 10;
-                qh[i] = 0.622 * es[i] / (p[i] - 0.378 * es[i]);
+            // Cálculo iterativo para cada capa
+            for (let i = 1; i < npuntos; i++) {
+                // Elevación
                 elev[i] = i * delta_alt;
-                
-                const qhm = 0.5 * qh[i] + 0.5 * qh[i-1];
-                const denm = 0.5 * den[i] + 0.5 * den[i-1];
-                l_prec = l_prec + qhm * denm * delta_alt;
+                elevKm[i] = elev[i] / 1000;
+
+                // Temperatura disminuye con alfa (°C/km)
+                tempC[i] = tempC[i-1] - (alfa * delta_alt / 1000);
+                tempK[i] = tempC[i] + 273;
+
+                // Presión del aire usando fórmula: p2 = p1 * (T2/T1)^expo
+                p[i] = p[i-1] * Math.pow((tempK[i] / tempK[i-1]), expo);
+
+                // Densidad del aire: ρa = (p * 1000) / (Ra * T)
+                den[i] = (p[i] * 1000) / (Ra * tempK[i]);
+
+                // Presión de vapor saturado: es = 0.61 * exp(17.27T / (237.3 + T))
+                es[i] = Pr_vap_sat(tempC[i]);
+
+                // Humedad específica: qv = 0.622 * e / (p - 0.378e)
+                qh[i] = 0.622 * es[i] / (p[i] - 0.378 * es[i]);
             }
 
-            // Mostrar resultado principal
-            document.getElementById('aguaPrecipitable').textContent = l_prec.toFixed(2);
+            // Calcular densidad para la primera capa
+            den[0] = (p[0] * 1000) / (Ra * tempK[0]);
+            es[0] = Pr_vap_sat(tempC[0]);
+            qh[0] = 0.622 * es[0] / (p[0] - 0.378 * es[0]);
+
+            // Llenar la tabla con los resultados
+            llenarTabla(elevKm, tempC, tempK, p, den, es, qh);
+
+            // Mostrar resultados
             resultsDiv.classList.add('show');
 
             // Crear gráficos
-            crearGraficos(elev, t, p, den, es, qh);
+            crearGraficos(elev, tempC, p, den, es, qh);
 
             // Mostrar contenedor de gráficos
             chartsContainer.style.display = 'block';
@@ -418,11 +549,116 @@
 
             // Log para debugging
             console.log('=== AGUA PRECIPITABLE ===');
-            console.log('Temperatura superficie:', tem, '°C');
             console.log('Altura total:', alt_total, 'm');
+            console.log('Alfa:', alfa, '°C/km');
+            console.log('Ra:', Ra, 'J/kgK');
+            console.log('Temperatura superficie:', tem, '°C');
             console.log('Número de capas:', num_capas);
-            console.log('Agua precipitable:', l_prec.toFixed(2), 'mm');
+            console.log('Delta altura por capa:', delta_alt, 'm');
             console.log('========================');
+        }
+
+        function llenarTabla(elevKm, tempC, tempK, p, den, es, qh) {
+            const tableBody = document.getElementById('tableBody');
+            tableBody.innerHTML = '';
+
+            const npuntos = elevKm.length;
+            const A = 1; // Área en m²
+
+            // Arrays para promedios y masa
+            const qhMedio = new Array(npuntos);
+            const denMedio = new Array(npuntos);
+            const deltaMasa = new Array(npuntos);
+
+            // La primera fila no tiene promedios ni masa incremental
+            qhMedio[0] = null;
+            denMedio[0] = null;
+            deltaMasa[0] = null;
+
+            // Calcular promedios y masa incremental entre capas consecutivas
+            for (let i = 1; i < npuntos; i++) {
+                qhMedio[i] = (qh[i-1] + qh[i]) / 2;
+                denMedio[i] = (den[i-1] + den[i]) / 2;
+                
+                // Δmi = qv · ρa · A · (zi - zi-1) · 1000  (multiplicar por 1000 porque z está en km)
+                deltaMasa[i] = qhMedio[i] * denMedio[i] * A * (elevKm[i] - elevKm[i-1]) * 1000;
+            }
+
+            // Calcular masa total
+            let masaTotal = 0;
+            for (let i = 1; i < npuntos; i++) {
+                masaTotal += deltaMasa[i];
+            }
+
+            // Mostrar masa total en el pie de tabla
+            document.getElementById('totalMasa').textContent = masaTotal.toFixed(1);
+
+            // Mostrar agua precipitable (masa total en mm)
+            document.getElementById('aguaPrecipitable').textContent = masaTotal.toFixed(2);
+
+            // Calcular porcentajes
+            const porcentajes = new Array(npuntos);
+            porcentajes[0] = null;
+            for (let i = 1; i < npuntos; i++) {
+                porcentajes[i] = (deltaMasa[i] / masaTotal) * 100;
+            }
+
+            // Llenar la tabla
+            for (let i = 0; i < npuntos; i++) {
+                const row = document.createElement('tr');
+                row.style.backgroundColor = i % 2 === 0 ? '#f9f9f9' : 'white';
+
+                // Elevación (km)
+                row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${elevKm[i].toFixed(1)}</td>`;
+                
+                // Temperatura (°C)
+                row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${tempC[i].toFixed(1)}</td>`;
+                
+                // Temperatura (°K)
+                row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${tempK[i].toFixed(1)}</td>`;
+                
+                // Presión del aire (kPa)
+                row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${p[i].toFixed(1)}</td>`;
+                
+                // Densidad (kg/m³)
+                row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${den[i].toFixed(2)}</td>`;
+                
+                // Presión de vapor (kPa)
+                row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${es[i].toFixed(2)}</td>`;
+                
+                // Humedad específica (kg/kg)
+                row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${qh[i].toFixed(4)}</td>`;
+                
+                // qv medio (kg/kg)
+                if (i === 0) {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center; background-color: #f0f0f0;">-</td>`;
+                } else {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${qhMedio[i].toFixed(4)}</td>`;
+                }
+                
+                // ρa medio (kg/m³)
+                if (i === 0) {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center; background-color: #f0f0f0;">-</td>`;
+                } else {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${denMedio[i].toFixed(2)}</td>`;
+                }
+                
+                // Δm (kg)
+                if (i === 0) {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center; background-color: #f0f0f0;">-</td>`;
+                } else {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${deltaMasa[i].toFixed(1)}</td>`;
+                }
+                
+                // % masa total
+                if (i === 0) {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center; background-color: #f0f0f0;">-</td>`;
+                } else {
+                    row.innerHTML += `<td style="padding: 10px; border: 1px solid #ddd; text-align: center;">${porcentajes[i].toFixed(1)}</td>`;
+                }
+
+                tableBody.appendChild(row);
+            }
         }
 
         let charts = {};
@@ -474,6 +710,13 @@
                             ...commonOptions.scales.x,
                             title: { display: true, text: 'Temperatura del aire (°C)' }
                         }
+                    },
+                    plugins: {
+                        ...commonOptions.plugins,
+                        title: {
+                            display: true,
+                            text: 'Perfil de la temperatura del aire'
+                        }
                     }
                 }
             });
@@ -499,6 +742,13 @@
                         x: { 
                             ...commonOptions.scales.x,
                             title: { display: true, text: 'Presión atmosférica (kPa)' }
+                        }
+                    },
+                    plugins: {
+                        ...commonOptions.plugins,
+                        title: {
+                            display: true,
+                            text: 'Perfil de la presión atmosférica'
                         }
                     }
                 }
@@ -526,6 +776,13 @@
                             ...commonOptions.scales.x,
                             title: { display: true, text: 'Densidad del aire (kg/m³)' }
                         }
+                    },
+                    plugins: {
+                        ...commonOptions.plugins,
+                        title: {
+                            display: true,
+                            text: 'Perfil de la densidad del aire'
+                        }
                     }
                 }
             });
@@ -552,6 +809,13 @@
                             ...commonOptions.scales.x,
                             title: { display: true, text: 'Presión de vapor (kPa)' }
                         }
+                    },
+                    plugins: {
+                        ...commonOptions.plugins,
+                        title: {
+                            display: true,
+                            text: 'Perfil de la presión de vapor'
+                        }
                     }
                 }
             });
@@ -577,6 +841,13 @@
                         x: { 
                             ...commonOptions.scales.x,
                             title: { display: true, text: 'Humedad específica (kg/kg)' }
+                        }
+                    },
+                    plugins: {
+                        ...commonOptions.plugins,
+                        title: {
+                            display: true,
+                            text: 'Perfil de la humedad específica'
                         }
                     }
                 }
